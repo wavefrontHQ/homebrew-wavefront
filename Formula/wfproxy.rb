@@ -8,6 +8,7 @@ class Wfproxy < Formula
   bottle :unneeded
 
   depends_on :java => "1.8+"
+  depends_on "wftelegraf" => ":optional"
 
   def install
 	lib.install "lib/proxy-uber.jar"
