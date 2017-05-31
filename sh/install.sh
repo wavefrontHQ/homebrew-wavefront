@@ -1,7 +1,18 @@
 #!/bin/bash
 
-function print_usage() {
-    echo "URL and API Token required."
+function print_usage_and_exit() {
+    echo "Failure: $1"
+    echo "Usage: $0 [-p | -a] [-tuh]"
+    echo -e "\t-a Install the telegraf agent. -h is required with this option."
+    echo -e "\t-h string  The host address of the proxy the agent connects to."
+    echo -e "\t-p Install the Wavefront proxy. -t and -u are required with this option."
+    echo -e "\t-t string  The Wavefront API token."
+    echo -e "\t-u string  The Wavefront URL. Typically http://WAVEFRONT_URL/api".
+    echo "Example usage:"
+    echo "$0 -p -t API_TOKEN -u WAVEFRONT_URL"
+    echo "$0 -a -h PROXY_HOST"
+    echo "$0 -p -t API_TOKEN -u WAVEFRONT_URL -a -h PROXY_HOST"
+    exit 1
 }
 
 function check_operating_system() {
@@ -57,7 +68,9 @@ check_operating_system
 TOKEN=
 URL=
 PROXY_HOST=
-while getopts "t:u:p:" opt; do
+INSTALL_PROXY=
+INSTALL_AGENT=
+while getopts "t:u:h:pa" opt; do
   case $opt in
     t)
       TOKEN="$OPTARG"
@@ -65,18 +78,35 @@ while getopts "t:u:p:" opt; do
     u)
       URL="$OPTARG"
       ;;
-    p)
+    h)
       PROXY_HOST="$OPTARG"
       ;;
+    p)
+      INSTALL_PROXY=y
+      ;;
+    a)
+      INSTALL_AGENT=y
+      ;;
     \?)
-      echo "Invalid option: -$OPTARG" >&2
+      print_usage_and_exit "Invalid option: -$OPTARG" >&2
       ;;
   esac
 done
 
-if [[ -z "$URL" || -z "$TOKEN" || -z "$PROXY_HOST" ]]; then
-    print_usage
-    exit 1
+if [[ -z "$INSTALL_PROXY" && -z "$INSTALL_AGENT" ]]; then
+    print_usage_and_exit "-p or -a is required."
+fi
+
+if [ -n "$INSTALL_PROXY" ]; then
+    if [[ -z "$URL" || -z "$TOKEN" ]]; then
+        print_usage_and_exit "Wavefront URL and API Token required."
+    fi
+fi
+
+if [ -n "$INSTALL_AGENT" ]; then
+    if [ -z "$PROXY_HOST" ]; then
+        print_usage_and_exit "Proxy HOST argument required."
+    fi
 fi
 
 check_homebrew_installed
@@ -91,12 +121,18 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-# install proxy and agent
+# install the wavefront Tap
 brew tap wavefrontHQ/wavefront
-brew install wfproxy --with-wftelegraf
 
-configure_proxy $TOKEN $URL
-brew services start wfproxy
+# install proxy and/or agent
+if [ -n "$INSTALL_PROXY" ]; then
+    brew install wfproxy
+    configure_proxy $TOKEN $URL
+    brew services start wfproxy
+fi
 
-configure_agent $PROXY_HOST
-brew services start wftelegraf
+if [ -n "$INSTALL_AGENT" ]; then
+    brew install wftelegraf
+    configure_agent $PROXY_HOST
+    brew services start wftelegraf
+fi
