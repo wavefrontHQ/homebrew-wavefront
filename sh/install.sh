@@ -33,6 +33,16 @@ function install_homebrew() {
     /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 }
 
+function check_java_installed() {
+    /usr/libexec/java_home -v 1.8
+    return $?
+}
+
+function install_java() {
+    echo "Installing Java. You may be prompted for your password."
+    brew cask install java
+}
+
 function configure_proxy() {
     TOKEN=$1
     URL=$2
@@ -59,6 +69,15 @@ function configure_agent() {
       convert_paths = true
       use_regex = false
 EOM
+}
+
+function check_status() {
+    STATUS=$1
+    MSG=$2
+    if [ $STATUS -ne 0 ]; then
+        echo $MSG
+        exit 1
+    fi
 }
 
 # main()
@@ -116,23 +135,30 @@ if [ $? -ne 0 ]; then
 fi
 
 check_homebrew_installed
-if [ $? -ne 0 ]; then
-    echo "Homebrew required. Aborting installation."
-    exit 1
+check_status $? "Homebrew required. Aborting installation."
+
+if [ -n "$INSTALL_PROXY" ]; then
+    check_java_installed
+    if [ $? -ne 0 ]; then
+        install_java
+    fi
 fi
 
 # install the wavefront Tap
 brew tap wavefrontHQ/wavefront
+check_status $? "Error installing the wavefront tap."
 
 # install proxy and/or agent
 if [ -n "$INSTALL_PROXY" ]; then
     brew install wfproxy
+    check_status $? "Wavefront proxy installation failed."
     configure_proxy $TOKEN $URL
     brew services start wfproxy
 fi
 
 if [ -n "$INSTALL_AGENT" ]; then
     brew install wftelegraf
+    check_status $? "Telegraf agent installation failed."
     configure_agent $PROXY_HOST
     brew services start wftelegraf
 fi
