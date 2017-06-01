@@ -124,7 +124,11 @@ fi
 
 if [ -n "$INSTALL_AGENT" ]; then
     if [ -z "$PROXY_HOST" ]; then
-        print_usage_and_exit "Proxy HOST argument required."
+        if [ -n "$INSTALL_PROXY" ]; then
+            PROXY_HOST="localhost"
+        else
+            print_usage_and_exit "Proxy HOST argument required."
+        fi
     fi
 fi
 

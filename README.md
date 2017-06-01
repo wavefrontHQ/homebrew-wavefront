@@ -4,14 +4,14 @@ These formulas allow installing supported wavefront integrations on MacOS using 
 
 ## Installation (via install script)
 
-Install wavefront proxy:  
+Wavefront proxy:  
 ```curl -sL https://raw.githubusercontent.com/wavefrontHQ/homebrew-wavefront/master/sh/install.sh | bash -s -- -p -t API_TOKEN -u WAVEFRONT_URL/api```
 
-Install wavefront telegraf agent:  
+Wavefront Telegraf agent:  
 ```curl -sL https://raw.githubusercontent.com/wavefrontHQ/homebrew-wavefront/master/sh/install.sh | bash -s -- -a -h PROXY_HOST_ADDRESS```
 
-Install both the proxy and telegraf agent:  
-```curl -sL https://raw.githubusercontent.com/wavefrontHQ/homebrew-wavefront/master/sh/install.sh | bash -s -- -p -t API_TOKEN -u WAVEFRONT_URL/api -a -h PROXY_HOST_ADDRESS```
+Proxy and Telegraf agent:  
+```curl -sL https://raw.githubusercontent.com/wavefrontHQ/homebrew-wavefront/master/sh/install.sh | bash -s -- -p -t API_TOKEN -u WAVEFRONT_URL/api -a```
 
 
 ## Installation (via Homebrew)
@@ -23,8 +23,8 @@ Install [Homebrew](https://brew.sh/) and then install the wavefront Tap:
 ```brew tap wavefrontHQ/wavefront```
 
 Wavefront proxy: ```brew install wfproxy```  
-Wavefront telegraf agent: ```brew install wftelegraf```  
-Proxy and telegraf agent: ```brew install wfproxy --with-wftelegraf```
+Wavefront Telegraf agent: ```brew install wftelegraf```  
+Proxy and Telegraf agent: ```brew install wfproxy --with-wftelegraf```
 
 
 ## Miscellaneous
@@ -34,7 +34,10 @@ Start the telegraf agent: ```brew services start wftelegraf```
 Stop the telegraf agent: ```brew services stop wftelegraf```  
 
 Proxy configuration file: ```/usr/local/etc/wfproxy.conf```  
-Agent configuration file: ```/usr/local/etc/telegraf.conf``` & ```/usr/local/etc/telegraf.d```
+Telegraf configuration file: ```/usr/local/etc/telegraf.conf``` & ```/usr/local/etc/telegraf.d```
 
 Proxy log file: ```/usr/local/var/log/wfproxy.log ```   
-Agent log file: ```/usr/local/var/log/telegraf.log```
+Telegraf log file: ```/usr/local/var/log/telegraf.log```
+
+## Uninstall
+```curl -sL https://raw.githubusercontent.com/wavefrontHQ/homebrew-wavefront/master/sh/uninstall.sh | bash -s```
