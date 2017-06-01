@@ -40,4 +40,4 @@ Proxy log file: ```/usr/local/var/log/wfproxy.log ```
 Telegraf log file: ```/usr/local/var/log/telegraf.log```
 
 ## Uninstall
-```curl -sL https://raw.githubusercontent.com/wavefrontHQ/homebrew-wavefront/master/sh/uninstall.sh | bash -s```
+```bash -c "$(curl -s https://raw.githubusercontent.com/wavefrontHQ/homebrew-wavefront/master/sh/uninstall.sh)"```
