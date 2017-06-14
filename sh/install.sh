@@ -1,5 +1,8 @@
 #!/bin/bash
 
+TELEGRAF_CONF_FILE=/usr/local/etc/telegraf.conf
+TELEGRAF_BACKUP_FILE=/usr/local/etc/telegraf.conf.wfbak
+
 function print_usage_and_exit() {
     echo "Failure: $1"
     echo "Usage: $0 [-p | -a] [-tuh]"
@@ -69,6 +72,15 @@ function configure_agent() {
       convert_paths = true
       use_regex = false
 EOM
+
+    install_wf_telegraf_conf
+}
+
+function install_wf_telegraf_conf() {
+    if [[ -f $TELEGRAF_CONF_FILE ]] ; then
+        mv $TELEGRAF_CONF_FILE $TELEGRAF_BACKUP_FILE 
+    fi
+    curl -sL https://raw.githubusercontent.com/wavefronthq/homebrew-wavefront/master/conf/telegraf.conf > $TELEGRAF_CONF_FILE
 }
 
 function check_status() {
