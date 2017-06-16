@@ -20,7 +20,7 @@ function uninstall_cmd() {
 
 function prompt_user() {
     MSG=$1
-    read -p "$1 (y/N)?" answer
+    read -p "$1 (y/N)? " answer
     case ${answer:0:1} in
         y|Y )
             return 0

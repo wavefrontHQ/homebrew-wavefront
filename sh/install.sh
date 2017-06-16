@@ -1,16 +1,21 @@
 #!/bin/bash
 
 TELEGRAF_CONF_FILE=/usr/local/etc/telegraf.conf
-TELEGRAF_BACKUP_FILE=/usr/local/etc/telegraf.conf.wfbak
+TELEGRAF_BACKUP_FILE=/usr/local/etc/telegraf.conf.old
+DEFAULT_TELEGRAF_CONF_FILE=/usr/local/etc/telegraf.conf.default
+PROXY_CONF_FILE=/usr/local/etc/wfproxy.conf
+PROXY_BACKUP_FILE=/usr/local/etc/wfproxy.conf.old
+DEFAULT_PROXY_CONF_FILE=/usr/local/etc/wfproxy.conf.default
 
 function print_usage_and_exit() {
     echo "Failure: $1"
-    echo "Usage: $0 [-p | -a] [-tuh]"
+    echo "Usage: $0 [-p | -a] [-tuhf]"
     echo -e "\t-a Install the telegraf agent. -h is required with this option."
     echo -e "\t-h string  The host address of the proxy the agent connects to."
     echo -e "\t-p Install the Wavefront proxy. -t and -u are required with this option."
     echo -e "\t-t string  The Wavefront API token."
     echo -e "\t-u string  The Wavefront URL. Typically http://WAVEFRONT_URL/api".
+    echo -e "\t-f string  Optional user friendly hostname used in reporting the telegraf and proxy metrics. Defaults to os.Hostname()".
     echo "Example usage:"
     echo "$0 -p -t API_TOKEN -u WAVEFRONT_URL"
     echo "$0 -a -h PROXY_HOST"
@@ -37,7 +42,7 @@ function install_homebrew() {
 }
 
 function check_java_installed() {
-    /usr/libexec/java_home -v 1.8
+    /usr/libexec/java_home -v 1.8 > /dev/null
     return $?
 }
 
@@ -49,23 +54,32 @@ function install_java() {
 function configure_proxy() {
     TOKEN=$1
     URL=$2
+    HOSTNAME=$3
 
-    CONF_FILE=/usr/local/etc/wfproxy.conf
+    if [[ -f $DEFAULT_PROXY_CONF_FILE ]] ; then
+        mv $PROXY_CONF_FILE $PROXY_BACKUP_FILE
+        mv $DEFAULT_PROXY_CONF_FILE $PROXY_CONF_FILE
+    fi
 
     # replace token
-    sed -i '' "s/TOKEN_HERE/${TOKEN}/" $CONF_FILE
+    sed -i '' "s/TOKEN_HERE/${TOKEN}/" $PROXY_CONF_FILE
 
     # replace server url
-    sed -i '' "s/WAVEFRONT_SERVER_URL/${URL//\//\\/}/" $CONF_FILE
+    sed -i '' "s/WAVEFRONT_SERVER_URL/${URL//\//\\/}/" $PROXY_CONF_FILE
+
+    if [[ -n ${HOSTNAME} ]] ; then
+        sed -i '' "s/myHost/\"${HOSTNAME}\"/" $PROXY_CONF_FILE
+    fi
 }
 
 function configure_agent() {
-    HOST=$1
+    PROXY_HOST=$1
+    FRIENDLY_HOSTNAME=$2
     cat > /usr/local/etc/telegraf.d/10-wavefront.conf <<- EOM
     ## Configuration for the Wavefront proxy to send metrics to
     [[outputs.wavefront]]
     # prefix = "telegraf."
-      host = "$HOST"
+      host = "$PROXY_HOST"
       port = 2878
       metric_separator = "."
       source_override = ["hostname", "snmp_host", "node_host"]
@@ -73,14 +87,24 @@ function configure_agent() {
       use_regex = false
 EOM
 
-    install_wf_telegraf_conf
+    install_wf_telegraf_conf $FRIENDLY_HOSTNAME
 }
 
 function install_wf_telegraf_conf() {
+    FRIENDLY_HOSTNAME=$1
     if [[ -f $TELEGRAF_CONF_FILE ]] ; then
         mv $TELEGRAF_CONF_FILE $TELEGRAF_BACKUP_FILE 
+        rm -f $DEFAULT_TELEGRAF_CONF_FILE
     fi
     curl -sL https://raw.githubusercontent.com/wavefronthq/homebrew-wavefront/master/conf/telegraf.conf > $TELEGRAF_CONF_FILE
+    sed -i '' "s/hostname = \"\"/hostname = \"$FRIENDLY_HOSTNAME\"/" $TELEGRAF_CONF_FILE
+}
+
+function prompt_hostname() {
+    read -p "Enter user-friendly hostname (Press Enter to use default: ${FRIENDLY_HOSTNAME}): " answer
+    if [[ -n ${answer} ]] ; then
+        FRIENDLY_HOSTNAME=${answer}
+    fi
 }
 
 function check_status() {
@@ -101,7 +125,8 @@ URL=
 PROXY_HOST=
 INSTALL_PROXY=
 INSTALL_AGENT=
-while getopts "t:u:h:pa" opt; do
+FRIENDLY_HOSTNAME=
+while getopts "t:u:h:f:pa" opt; do
   case $opt in
     t)
       TOKEN="$OPTARG"
@@ -111,6 +136,9 @@ while getopts "t:u:h:pa" opt; do
       ;;
     h)
       PROXY_HOST="$OPTARG"
+      ;;
+    f)
+      FRIENDLY_HOSTNAME="$OPTARG"
       ;;
     p)
       INSTALL_PROXY=y
@@ -160,6 +188,15 @@ if [ -n "$INSTALL_PROXY" ]; then
     fi
 fi
 
+if [[ -z ${FRIENDLY_HOSTNAME} ]] ; then
+    FRIENDLY_HOSTNAME=`hostname`
+    prompt_hostname ${FRIENDLY_HOSTNAME}
+fi
+echo "Using hostname: ${FRIENDLY_HOSTNAME}"
+
+# update homebrew
+brew update
+
 # install the wavefront Tap
 brew tap wavefrontHQ/wavefront
 check_status $? "Error installing the wavefront tap."
@@ -168,13 +205,13 @@ check_status $? "Error installing the wavefront tap."
 if [ -n "$INSTALL_PROXY" ]; then
     brew install wfproxy
     check_status $? "Wavefront proxy installation failed."
-    configure_proxy $TOKEN $URL
+    configure_proxy $TOKEN $URL $FRIENDLY_HOSTNAME
     brew services start wfproxy
 fi
 
 if [ -n "$INSTALL_AGENT" ]; then
     brew install wftelegraf
     check_status $? "Telegraf agent installation failed."
-    configure_agent $PROXY_HOST
+    configure_agent $PROXY_HOST $FRIENDLY_HOSTNAME
     brew services start wftelegraf
 fi
