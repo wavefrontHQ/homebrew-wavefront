@@ -190,7 +190,6 @@ fi
 
 if [[ -z ${FRIENDLY_HOSTNAME} ]] ; then
     FRIENDLY_HOSTNAME=`hostname`
-    prompt_hostname ${FRIENDLY_HOSTNAME}
 fi
 echo "Using hostname: ${FRIENDLY_HOSTNAME}"
 
