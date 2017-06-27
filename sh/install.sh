@@ -68,7 +68,7 @@ function configure_proxy() {
     sed -i '' "s/WAVEFRONT_SERVER_URL/${URL//\//\\/}/" $PROXY_CONF_FILE
 
     if [[ -n ${HOSTNAME} ]] ; then
-        sed -i '' "s/myHost/\"${HOSTNAME}\"/" $PROXY_CONF_FILE
+        sed -i '' "s/myHost/${HOSTNAME}/" $PROXY_CONF_FILE
     fi
 }
 
