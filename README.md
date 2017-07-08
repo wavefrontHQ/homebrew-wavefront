@@ -5,13 +5,19 @@ These formulas allow installing supported wavefront integrations on MacOS using 
 ## Installation (via install script)
 
 Wavefront proxy:  
-```curl -sL https://raw.githubusercontent.com/wavefrontHQ/homebrew-wavefront/master/sh/install.sh | bash -s -- -p -t API_TOKEN -u WAVEFRONT_URL/api```
+```
+curl -sL https://raw.githubusercontent.com/wavefrontHQ/homebrew-wavefront/master/sh/install.sh | bash -s -- -p -t API_TOKEN -u WAVEFRONT_URL/api
+```
 
 Wavefront Telegraf agent:  
-```curl -sL https://raw.githubusercontent.com/wavefrontHQ/homebrew-wavefront/master/sh/install.sh | bash -s -- -a -h PROXY_HOST_ADDRESS```
+```
+curl -sL https://raw.githubusercontent.com/wavefrontHQ/homebrew-wavefront/master/sh/install.sh | bash -s -- -a -h PROXY_HOST_ADDRESS
+```
 
 Proxy and Telegraf agent:  
-```curl -sL https://raw.githubusercontent.com/wavefrontHQ/homebrew-wavefront/master/sh/install.sh | bash -s -- -p -t API_TOKEN -u WAVEFRONT_URL/api -a```
+```
+curl -sL https://raw.githubusercontent.com/wavefrontHQ/homebrew-wavefront/master/sh/install.sh | bash -s -- -p -t API_TOKEN -u WAVEFRONT_URL/api -a
+```
 
 
 ## Installation (via Homebrew)
@@ -33,11 +39,13 @@ Stop the proxy: ```brew services stop wfproxy```
 Start the telegraf agent: ```brew services start wftelegraf```  
 Stop the telegraf agent: ```brew services stop wftelegraf```  
 
-Proxy configuration file: ```/usr/local/etc/wfproxy.conf```  
+Proxy configuration file: ```/usr/local/etc/wavefront/wavefront-proxy/wavefront.conf```  
 Telegraf configuration file: ```/usr/local/etc/telegraf.conf``` & ```/usr/local/etc/telegraf.d```
 
-Proxy log file: ```/usr/local/var/log/wfproxy.log ```   
+Proxy log file: ```/usr/local/var/log/wavefront/wavefront.log```   
 Telegraf log file: ```/usr/local/var/log/telegraf.log```
 
 ## Uninstall
-```bash -c "$(curl -s https://raw.githubusercontent.com/wavefrontHQ/homebrew-wavefront/master/sh/uninstall.sh)"```
+```
+bash -c "$(curl -s https://raw.githubusercontent.com/wavefrontHQ/homebrew-wavefront/master/sh/uninstall.sh)"
+```
