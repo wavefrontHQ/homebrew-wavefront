@@ -13,10 +13,13 @@ class Wfproxy < Formula
   def install
 	lib.install "lib/proxy-uber.jar"
   	bin.install "bin/wfproxy"
-	etc.install "etc/wfproxy.conf"
+    (etc/"wavefront/wavefront-proxy").mkpath
+    (var/"spool/wavefront-proxy").mkpath
+    (var/"log/wavefront").mkpath
+    etc.install "etc/wfproxy.conf" => "wavefront/wavefront-proxy/wavefront.conf"
   end
 
-  plist_options :manual => "wfproxy -f #{HOMEBREW_PREFIX}/etc/wfproxy.conf"
+  plist_options :manual => "wfproxy -f #{HOMEBREW_PREFIX}/etc/wavefront/wavefront-proxy/wavefront.conf"
 
   def plist; <<-EOS.undent
     <?xml version="1.0" encoding="UTF-8"?>
@@ -34,16 +37,16 @@ class Wfproxy < Formula
         <array>
           <string>#{opt_bin}/wfproxy</string>
           <string>-f</string>
-          <string>#{etc}/wfproxy.conf</string>
+          <string>#{etc}/wavefront/wavefront-proxy/wavefront.conf</string>
         </array>
         <key>RunAtLoad</key>
         <true/>
         <key>WorkingDirectory</key>
-        <string>#{var}</string>
+        <string>#{var}/spool/wavefront-proxy</string>
         <key>StandardErrorPath</key>
-        <string>#{var}/log/wfproxy.log</string>
+        <string>#{var}/log/wavefront/wavefront.log</string>
         <key>StandardOutPath</key>
-        <string>#{var}/log/wfproxy.log</string>
+        <string>#{var}/log/wavefront/wavefront.log</string>
       </dict>
     </plist>
     EOS
