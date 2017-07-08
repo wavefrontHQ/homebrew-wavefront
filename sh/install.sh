@@ -3,9 +3,10 @@
 TELEGRAF_CONF_FILE=/usr/local/etc/telegraf.conf
 TELEGRAF_BACKUP_FILE=/usr/local/etc/telegraf.conf.old
 DEFAULT_TELEGRAF_CONF_FILE=/usr/local/etc/telegraf.conf.default
-PROXY_CONF_FILE=/usr/local/etc/wfproxy.conf
-PROXY_BACKUP_FILE=/usr/local/etc/wfproxy.conf.old
-DEFAULT_PROXY_CONF_FILE=/usr/local/etc/wfproxy.conf.default
+PROXY_CONF_DIR=/usr/local/etc/wavefront/wavefront-proxy
+PROXY_CONF_FILE=${PROXY_CONF_DIR}/wavefront.conf
+PROXY_BACKUP_FILE=${PROXY_CONF_DIR}/wavefront.conf.old
+DEFAULT_PROXY_CONF_FILE=${PROXY_CONF_DIR}/wavefront.conf.default
 
 function print_usage_and_exit() {
     echo "Failure: $1"
