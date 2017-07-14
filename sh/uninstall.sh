@@ -1,5 +1,7 @@
 #!/bin/bash
 
+PROXY_CONF_DIR=/usr/local/etc/wavefront/wavefront-proxy
+
 function list_removal() {
     echo "This will uninstall the following:"
     echo -e "\t Wavefront proxy"
@@ -16,6 +18,10 @@ function uninstall_cmd() {
         brew services stop $CMD
         brew uninstall $CMD
     fi
+}
+
+function delete_proxy_files() {
+    rm -f ${PROXY_CONF_DIR}/.wavefront_id
 }
 
 function prompt_user() {
@@ -57,6 +63,7 @@ if [ $? -ne 0 ]; then
 fi
 
 uninstall_cmd wfproxy
+delete_proxy_files
 uninstall_cmd wftelegraf
 brew untap wavefronthq/wavefront
 
