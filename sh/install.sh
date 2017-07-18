@@ -76,6 +76,15 @@ function configure_proxy() {
 function configure_agent() {
     PROXY_HOST=$1
     FRIENDLY_HOSTNAME=$2
+
+    # set PROXY_HOST to localhost if it equals the hostname in proxy conf
+    if [[ -f $PROXY_CONF_FILE ]] ; then
+        grep -q "hostname=${PROXY_HOST}$" $PROXY_CONF_FILE
+        if [[ $? -eq 0 ]]; then
+            PROXY_HOST=localhost
+        fi
+    fi
+
     cat > /usr/local/etc/telegraf.d/10-wavefront.conf <<- EOM
     ## Configuration for the Wavefront proxy to send metrics to
     [[outputs.wavefront]]
