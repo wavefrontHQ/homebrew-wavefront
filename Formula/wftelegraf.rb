@@ -2,8 +2,8 @@ require "formula"
 
 class Wftelegraf < Formula
   homepage "https://www.wavefront.com"
-  url "http://wavefront-cdn.s3-website-us-west-2.amazonaws.com/brew/telegraf-1.3.2.tar.gz"
-  sha256 "a7c4bae1e689307c3e7438ecbf9885b2ef3e6f24f2403d2866e143ad5a5aed3c"
+  url "http://wavefront-cdn.s3-website-us-west-2.amazonaws.com/brew/telegraf-1.4.0.tar.gz"
+  sha256 "bd46cc0ff5a463457e8287ab46f07ee2be64674803f67596225e9d8ff4313007"
 
   bottle :unneeded
 
