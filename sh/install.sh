@@ -245,10 +245,12 @@ if [ -n "$INSTALL_PROXY" ]; then
     install_service $PROXY_SERVICE_NAME "Wavefront proxy installation failed."
     configure_proxy $TOKEN $URL $FRIENDLY_HOSTNAME
     brew services start $PROXY_SERVICE_NAME
+    check_status $? "Error starting $PROXY_SERVICE_NAME."
 fi
 
 if [ -n "$INSTALL_AGENT" ]; then
     install_service $TELEGRAF_SERVICE_NAME "Telegraf agent installation failed."
     configure_agent $PROXY_HOST $FRIENDLY_HOSTNAME
     brew services start $TELEGRAF_SERVICE_NAME
+    check_status $? "Error starting $TELEGRAF_SERVICE_NAME."
 fi
