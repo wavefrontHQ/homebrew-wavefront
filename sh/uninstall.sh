@@ -1,6 +1,10 @@
 #!/bin/bash
 
-PROXY_CONF_DIR=/usr/local/etc/wavefront/wavefront-proxy
+PROXY_CONF_DIR=/usr/local/etc/wavefront
+LOG_DIR=/usr/local/var/log
+PROXY_LOG_DIR=${LOG_DIR}/wavefront
+ETC_DIR=/usr/local/etc
+PROXY_SPOOL_DIR=/usr/local/var/spool/wavefront-proxy
 
 function list_removal() {
     echo "This will uninstall the following:"
@@ -21,7 +25,17 @@ function uninstall_cmd() {
 }
 
 function delete_proxy_files() {
-    rm -f ${PROXY_CONF_DIR}/.wavefront_id
+    rm -rf ${PROXY_CONF_DIR}
+    rm -rf ${PROXY_LOG_DIR}
+    rm -rf ${PROXY_SPOOL_DIR}
+}
+
+function delete_telegraf_files() {
+    rm -f ${ETC_DIR}/telegraf.conf
+    rm -f ${ETC_DIR}/telegraf.conf.default
+    rm -f ${ETC_DIR}/telegraf.conf.old
+    rm -rf ${ETC_DIR}/telegraf.d
+    rm -f ${LOG_DIR}/telegraf.log
 }
 
 function prompt_user() {
@@ -51,7 +65,10 @@ function uninstall_cask_java() {
 function uninstall_homebrew() {
     BREW_PATH=$(which brew) 
     if [ $? -eq 0 ]; then
-        ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/uninstall)"
+        prompt_user "Uninstall Homebrew installation"
+        if [ $? -eq 0 ]; then
+            ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/uninstall)"
+        fi
     fi
 }
 
@@ -65,6 +82,7 @@ fi
 uninstall_cmd wfproxy
 delete_proxy_files
 uninstall_cmd wftelegraf
+delete_telegraf_files
 brew untap wavefronthq/wavefront
 
 uninstall_cask_java
