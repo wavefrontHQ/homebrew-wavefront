@@ -9,7 +9,8 @@ PROXY_BACKUP_FILE=${PROXY_CONF_DIR}/wavefront.conf.old
 DEFAULT_PROXY_CONF_FILE=${PROXY_CONF_DIR}/wavefront.conf.default
 
 PROXY_SERVICE_NAME=wfproxy
-TELEGRAF_SERVICE_NAME=wftelegraf
+TELEGRAF_SERVICE_NAME=telegraf
+OLD_TELEGRAF_SERVICE_NAME=wftelegraf
 
 function print_usage_and_exit() {
     echo "Failure: $1"
@@ -58,6 +59,27 @@ function stop_if_installed() {
     brew list | grep -q "${SERVICE}$"
     if [[ $? -eq 0 ]]; then
         brew services stop ${SERVICE}
+    fi
+}
+
+function uninstall_if_installed() {
+    SERVICE=$1
+    brew list | grep -q "${SERVICE}$"
+    if [[ $? -eq 0 ]]; then
+        brew services stop ${SERVICE}
+        brew uninstall ${SERVICE}
+        return 0
+    fi
+    return 1
+}
+
+function remove_old_telegraf() {
+    # We used to distribute a custom telegraf install named wftelegraf
+    # but now use the mainline telegraf install available via homebrew-core
+    uninstall_if_installed $OLD_TELEGRAF_SERVICE_NAME
+    if [[ $? -eq 0 ]] ; then
+        echo "Uninstalled $OLD_TELEGRAF_SERVICE_NAME service"
+        echo "Installing mainline $TELEGRAF_SERVICE_NAME service..."
     fi
 }
 
@@ -249,6 +271,7 @@ if [ -n "$INSTALL_PROXY" ]; then
 fi
 
 if [ -n "$INSTALL_AGENT" ]; then
+    remove_old_telegraf
     install_service $TELEGRAF_SERVICE_NAME "Telegraf agent installation failed."
     configure_agent $PROXY_HOST $FRIENDLY_HOSTNAME
     brew services start $TELEGRAF_SERVICE_NAME
