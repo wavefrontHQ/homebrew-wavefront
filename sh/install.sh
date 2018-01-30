@@ -143,7 +143,7 @@ function configure_agent() {
       host = "$PROXY_HOST"
       port = 2878
       metric_separator = "."
-      source_override = ["hostname", "snmp_host", "node_host"]
+      source_override = ["hostname", "agent_host", "node_host"]
       convert_paths = true
       use_regex = false
 EOM
