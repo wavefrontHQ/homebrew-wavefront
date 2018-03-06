@@ -9,6 +9,7 @@ PROXY_BACKUP_FILE=${PROXY_CONF_DIR}/wavefront.conf.old
 DEFAULT_PROXY_CONF_FILE=${PROXY_CONF_DIR}/wavefront.conf.default
 
 PROXY_SERVICE_NAME=wfproxy
+PROXY_NEXT_SERVICE_NAME=wfproxynext
 TELEGRAF_SERVICE_NAME=telegraf
 OLD_TELEGRAF_SERVICE_NAME=wftelegraf
 
@@ -21,6 +22,7 @@ function print_usage_and_exit() {
     echo -e "\t-t string  The Wavefront API token."
     echo -e "\t-u string  The Wavefront URL. Typically http://WAVEFRONT_URL/api".
     echo -e "\t-f string  Optional user friendly hostname used in reporting the telegraf and proxy metrics. Defaults to os.Hostname()".
+    echo -e "\t-n Install the Wavefront proxy-next. -p required with this option.".
     echo "Example usage:"
     echo "$0 -p -t API_TOKEN -u WAVEFRONT_URL"
     echo "$0 -a -h PROXY_HOST"
@@ -85,16 +87,6 @@ function remove_old_telegraf() {
 
 function delete_proxy_files() {
     rm -f ${PROXY_CONF_DIR}/.wavefront_id
-}
-
-function check_java_installed() {
-    /usr/libexec/java_home -v 1.8 > /dev/null
-    return $?
-}
-
-function install_java() {
-    echo "Installing Java. You may be prompted for your password."
-    brew cask install java
 }
 
 function configure_proxy() {
@@ -186,9 +178,10 @@ TOKEN=
 URL=
 PROXY_HOST=
 INSTALL_PROXY=
+INSTALL_PROXY_NEXT=
 INSTALL_AGENT=
 FRIENDLY_HOSTNAME=
-while getopts "t:u:h:f:pa" opt; do
+while getopts "t:u:h:f:pan" opt; do
   case $opt in
     t)
       TOKEN="$OPTARG"
@@ -207,6 +200,9 @@ while getopts "t:u:h:f:pa" opt; do
       ;;
     a)
       INSTALL_AGENT=y
+      ;;
+    n)
+      INSTALL_PROXY_NEXT=y
       ;;
     \?)
       print_usage_and_exit "Invalid option: -$OPTARG" >&2
@@ -243,13 +239,6 @@ fi
 check_homebrew_installed
 check_status $? "Homebrew required. Aborting installation."
 
-if [ -n "$INSTALL_PROXY" ]; then
-    check_java_installed
-    if [ $? -ne 0 ]; then
-        install_java
-    fi
-fi
-
 if [[ -z ${FRIENDLY_HOSTNAME} ]] ; then
     FRIENDLY_HOSTNAME=`hostname`
 fi
@@ -264,10 +253,14 @@ check_status $? "Error installing the wavefront tap."
 
 # install proxy and/or agent
 if [ -n "$INSTALL_PROXY" ]; then
-    install_service $PROXY_SERVICE_NAME "Wavefront proxy installation failed."
+    service_name=$PROXY_SERVICE_NAME
+    if [ -n "$INSTALL_PROXY_NEXT" ]; then
+        service_name=$PROXY_NEXT_SERVICE_NAME
+    fi
+    install_service $service_name "Wavefront proxy installation failed."
     configure_proxy $TOKEN $URL $FRIENDLY_HOSTNAME
-    brew services start $PROXY_SERVICE_NAME
-    check_status $? "Error starting $PROXY_SERVICE_NAME."
+    brew services start $service_name
+    check_status $? "Error starting $service_name."
 fi
 
 if [ -n "$INSTALL_AGENT" ]; then
