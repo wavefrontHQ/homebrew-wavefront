@@ -84,6 +84,7 @@ if [ $? -ne 0 ]; then
 fi
 
 uninstall_cmd wfproxy
+uninstall_cmd wfproxynext
 delete_proxy_files
 uninstall_cmd wftelegraf
 uninstall_cmd telegraf
