@@ -9,7 +9,7 @@ Wavefront proxy:
 curl -sL https://raw.githubusercontent.com/wavefrontHQ/homebrew-wavefront/master/sh/install.sh | bash -s -- -p -t API_TOKEN -u WAVEFRONT_URL/api
 ```
 
-Wavefront Telegraf agent:  
+Telegraf agent:  
 ```
 curl -sL https://raw.githubusercontent.com/wavefrontHQ/homebrew-wavefront/master/sh/install.sh | bash -s -- -a -h PROXY_HOST_ADDRESS
 ```
@@ -29,15 +29,15 @@ Install [Homebrew](https://brew.sh/) and then install the wavefront Tap:
 ```brew tap wavefrontHQ/wavefront```
 
 Wavefront proxy: ```brew install wfproxy```  
-Wavefront Telegraf agent: ```brew install wftelegraf```  
-Proxy and Telegraf agent: ```brew install wfproxy --with-wftelegraf```
+Telegraf agent: ```brew install telegraf```  
+Proxy and Telegraf agent: ```brew install wfproxy --with-telegraf```
 
 
 ## Miscellaneous
 Start the proxy: ```brew services start wfproxy```  
 Stop the proxy: ```brew services stop wfproxy```  
-Start the telegraf agent: ```brew services start wftelegraf```  
-Stop the telegraf agent: ```brew services stop wftelegraf```  
+Start the telegraf agent: ```brew services start telegraf```  
+Stop the telegraf agent: ```brew services stop telegraf```  
 
 Proxy configuration file: ```/usr/local/etc/wavefront/wavefront-proxy/wavefront.conf```  
 Telegraf configuration file: ```/usr/local/etc/telegraf.conf``` & ```/usr/local/etc/telegraf.d```
