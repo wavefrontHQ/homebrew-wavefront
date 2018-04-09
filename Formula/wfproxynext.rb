@@ -2,8 +2,8 @@ require "formula"
 
 class Wfproxynext < Formula
   homepage "https://www.wavefront.com"
-  url "http://wavefront-cdn.s3-website-us-west-2.amazonaws.com/brew/wfproxy-4.26.0.tar.gz"
-  sha256 "d2569c316e3e2aacc4179bd058222c049ba23bd6257b0a0efb697f8e9ccf8dc6"
+  url "http://wavefront-cdn.s3-website-us-west-2.amazonaws.com/brew/wfproxy-4.26.1.tar.gz"
+  sha256 "a2aca2a18062fec5226996acd7006bc488763e29dc55ffa15ad486788bd3caa1"
 
   bottle :unneeded
 
@@ -11,7 +11,7 @@ class Wfproxynext < Formula
 
   def install
 	lib.install "lib/proxy-uber.jar"
-	lib.install "lib/jre"
+	lib.install "lib/jdk"
   	bin.install "bin/wfproxy"
     (etc/"wavefront/wavefront-proxy").mkpath
     (var/"spool/wavefront-proxy").mkpath
