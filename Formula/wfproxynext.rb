@@ -17,6 +17,7 @@ class Wfproxynext < Formula
     (var/"spool/wavefront-proxy").mkpath
     (var/"log/wavefront").mkpath
     etc.install "etc/wfproxy.conf" => "wavefront/wavefront-proxy/wavefront.conf"
+    etc.install "etc/log4j2.xml" => "wavefront/wavefront-proxy/log4j2.xml"
   end
 
   plist_options :manual => "wfproxy -f #{HOMEBREW_PREFIX}/etc/wavefront/wavefront-proxy/wavefront.conf"
