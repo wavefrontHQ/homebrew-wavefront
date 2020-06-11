@@ -2,8 +2,8 @@ require "formula"
 
 class Wfproxy < Formula
   homepage "https://www.wavefront.com"
-  url "http://wavefront-cdn.s3-website-us-west-2.amazonaws.com/brew/wavefront-proxy-7.2.0.zip"
-  sha256 "9605625955327541f110d0ad41c42ded3926121edf66bb7551c3c63a3d1e1282"
+  url "http://wavefront-cdn.s3-website-us-west-2.amazonaws.com/brew/wavefront-proxy-7.3.0.zip"
+  sha256 "6ca6577faa3dc44d32b47ccad06d4a857bb7a252cb7723e18c599ee3cb47c7ae"
 
   bottle :unneeded
 
