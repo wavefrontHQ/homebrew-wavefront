@@ -71,7 +71,7 @@ function uninstall_homebrew() {
     if [ $? -eq 0 ]; then
         prompt_user "Uninstall Homebrew installation"
         if [ $? -eq 0 ]; then
-            ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/uninstall)"
+            /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/uninstall.sh)"
         fi
     fi
 }
