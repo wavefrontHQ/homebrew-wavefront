@@ -5,8 +5,6 @@ class Wfproxy < Formula
   url "http://wavefront-cdn.s3-website-us-west-2.amazonaws.com/brew/wavefront-proxy-10.14.0.zip"
   sha256 "a5dc0d16b2371cc97a29fd138fba392fdbb09c45f0e08aecf53f077aa33a3e08"
 
-  bottle :unneeded
-
   depends_on "telegraf" => :optional
 
   def install
