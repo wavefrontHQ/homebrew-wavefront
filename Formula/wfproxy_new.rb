@@ -7,13 +7,14 @@ class WfproxyNew < Formula
   depends_on "openjdk@11" => :optional
 
   def install
-	lib.install "wavefront-proxy.jar"
-  	bin.install "wfproxy"
+    lib.install "wavefront-proxy.jar"
+    bin.install "wfproxy"
+    etc.install "proxy.conf" => "wfproxy/proxy.conf"
+    etc.install "log4j2.xml" => "wfproxy/log4j2.xml"
+
     (etc/"wavefront/wavefront-proxy").mkpath
     (var/"spool/wavefront-proxy").mkpath
     (var/"log/wavefront").mkpath
-    etc.install "proxy.conf" => "wavefront/wavefront-proxy/wavefront.conf"
-    etc.install "log4j2.xml" => "wavefront/wavefront-proxy/log4j2.xml"
   end
 
   plist_options :manual => "wfproxy -f #{HOMEBREW_PREFIX}/etc/wavefront/wavefront-proxy/wavefront.conf"
