@@ -9,7 +9,6 @@ class Wfproxy < Formula
 
   def install
 	lib.install "lib/proxy-uber.jar"
-	lib.install "lib/jdk"
   	bin.install "bin/wfproxy"
     (etc/"wavefront/wavefront-proxy").mkpath
     (var/"spool/wavefront-proxy").mkpath
