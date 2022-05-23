@@ -1,4 +1,4 @@
-class Wfproxy < Formula
+class WfproxyNew < Formula
   homepage "https://www.wavefront.com"
   url "https://wavefront-cdn-dev.s3.us-west-2.amazonaws.com/wavefront-proxy/wfproxy_11.2-SNAPSHOT_20220523-153903.zip"
   sha256 "d95b60167323028c25b51152380d4a9a909fe0ac"
