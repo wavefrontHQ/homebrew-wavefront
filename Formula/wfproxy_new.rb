@@ -9,7 +9,7 @@ class WfproxyNew < Formula
   def install
     (etc/"wavefront/wavefront-proxy").mkpath
     (var/"spool/wavefront-proxy").mkpath
-    (var/"log/wavefront").mkpath
+    (var/"log/wavefront-proxy").mkpath
 
     lib.install "wavefront-proxy.jar"
     bin.install "wfproxy" => "wfproxy_new"
@@ -20,8 +20,8 @@ class WfproxyNew < Formula
   plist_options :manual => "wfproxy_new"
 
   service do
-    log_path var/"log/wavefront/stdout.log"
-    error_log_path var/"log/wavefront/stderr.log"
+    log_path var/"log/wavefront-proxy/stdout.log"
+    error_log_path var/"log/wavefront-proxy/stderr.log"
     keep_alive true
     run bin/"wfproxy_new"
   end
