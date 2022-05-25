@@ -16,17 +16,17 @@ class WfproxyNew < Formula
     etc.install "wavefront.conf" => "wavefront/wavefront-proxy/wavefront.conf"
     etc.install "log4j2.xml" => "wavefront/wavefront-proxy/log4j2.xml"
 
-    server = ENV["HOMEBREW_WF_SERVER"]
-    token = ENV["HOMEBREW_WF_TOKEN"]
+    server = ENV["HOMEBREW_WF_URL"]
+    key = ENV["HOMEBREW_WF_TK"]
 
     if server
       print "Using server: '"+server+"'\n"
       inreplace etc/"wavefront/wavefront-proxy/wavefront.conf", /server=.*/, "server="+server
     end
 
-    if token
-      print "Using token: '"+token+"'\n"
-      inreplace etc/"wavefront/wavefront-proxy/wavefront.conf", /token=.*/, "token="+token
+    if key
+      print "Using token: '"+key+"'\n"
+      inreplace etc/"wavefront/wavefront-proxy/wavefront.conf", /token=.*/, "token="+key
     end
 
   end
