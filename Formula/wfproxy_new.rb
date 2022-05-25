@@ -1,7 +1,7 @@
 class WfproxyNew < Formula
   homepage "https://www.wavefront.com"
-  url "https://macos-testing-glaullon.s3.us-west-2.amazonaws.com/wfproxy_11.2-SNAPSHOT_20220524-115027.zip"
-  sha256 "29bcf4d0db15caca6e734f00f0cf8f7a479f4ea0c0830372210a0a5e4ab381da"
+  url "https://macos-testing-glaullon.s3.us-west-2.amazonaws.com/wfproxy_11.2-SNAPSHOT_20220525-125048.zip"
+  sha256 "0e5deb1b26f7da6c807203c1418d955ee3babc7e87e5b7bdcce6fcb8716ce151"
 
   depends_on "telegraf" => :optional
   depends_on "java11" => :recommended
@@ -17,14 +17,18 @@ class WfproxyNew < Formula
     etc.install "log4j2.xml" => "wavefront/wavefront-proxy/log4j2.xml"
 
     server = ENV["HOMEBREW_WF_SERVER"]
+    token = ENV["HOMEBREW_WF_TOKEN"]
+
     if server
+      print "Using server: '"+server+"'\n"
       inreplace etc/"wavefront/wavefront-proxy/wavefront.conf", /server=.*/, "server="+server
     end
 
-    token = ENV["HOMEBREW_WF_TOKEN"]
     if token
+      print "Using token: '"+token+"'\n"
       inreplace etc/"wavefront/wavefront-proxy/wavefront.conf", /token=.*/, "token="+token
     end
+
   end
 
   plist_options :manual => "wfproxy_new"
