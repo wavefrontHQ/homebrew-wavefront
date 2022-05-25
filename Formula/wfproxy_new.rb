@@ -4,7 +4,7 @@ class WfproxyNew < Formula
   sha256 "29bcf4d0db15caca6e734f00f0cf8f7a479f4ea0c0830372210a0a5e4ab381da"
 
   depends_on "telegraf" => :optional
-  depends_on "java11"
+  depends_on "java11" => :recommended
 
   def install
     (etc/"wavefront/wavefront-proxy").mkpath
@@ -15,6 +15,16 @@ class WfproxyNew < Formula
     bin.install "wfproxy" => "wfproxy_new"
     etc.install "wavefront.conf" => "wavefront/wavefront-proxy/wavefront.conf"
     etc.install "log4j2.xml" => "wavefront/wavefront-proxy/log4j2.xml"
+
+    server = ENV["HOMEBREW_WF_SERVER"]
+    if server
+      inreplace etc/"wavefront/wavefront-proxy/wavefront.conf", /server=.*/, "server="+server
+    end
+
+    token = ENV["HOMEBREW_WF_TOKEN"]
+    if token
+      inreplace etc/"wavefront/wavefront-proxy/wavefront.conf", /token=.*/, "token="+token
+    end
   end
 
   plist_options :manual => "wfproxy_new"
