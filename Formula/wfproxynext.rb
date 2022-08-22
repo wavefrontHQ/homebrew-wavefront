@@ -8,7 +8,7 @@ class Wfproxynext < Formula
   depends_on "telegraf" => :optional
 
   def install
-	lib.install "lib/proxy-uber.jar"
+	lib.install "lib/wavefront-proxy.jar"
 	lib.install "lib/jdk"
   	bin.install "bin/wfproxy"
     (etc/"wavefront/wavefront-proxy").mkpath
