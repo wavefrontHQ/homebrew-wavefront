@@ -2,8 +2,8 @@ require "formula"
 
 class Wfproxy < Formula
   homepage "https://www.wavefront.com"
-  url "https://wavefront-cdn.s3.us-west-2.amazonaws.com/brew/wavefront-proxy-11.3.0.zip"
-  sha256 "55d9e4c3adba9f34b116f951a5ee8c8b3daeea5d34c53caa68f28d406f60ec43"
+  url "https://wavefront-cdn.s3.us-west-2.amazonaws.com/brew/wavefront-proxy-11.4.0.zip"
+  sha256 "caa5dc1f38a3f786b9ecab08067cb50b9ec09d441fc59478f61fc8f41d1de058"
 
   depends_on "telegraf" => :optional
 
