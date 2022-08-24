@@ -2,13 +2,13 @@ require "formula"
 
 class Wfproxy < Formula
   homepage "https://www.wavefront.com"
-  url "https://wavefront-cdn.s3.us-west-2.amazonaws.com/brew/wavefront-proxy-11.4.0.zip"
-  sha256 "badc1a2a819fb3b1a490d515d5da5aeccee640ee0775dc05d5cfe157fee255cf"
+  url "https://wavefront-cdn.s3.us-west-2.amazonaws.com/brew/wavefront-proxy-11.3.0.zip"
+  sha256 "55d9e4c3adba9f34b116f951a5ee8c8b3daeea5d34c53caa68f28d406f60ec43"
 
   depends_on "telegraf" => :optional
 
   def install
-	lib.install "lib/wavefront-proxy.jar"
+	lib.install "lib/proxy-uber.jar"
 	lib.install "lib/jdk"
   	bin.install "bin/wfproxy"
     (etc/"wavefront/wavefront-proxy").mkpath
