@@ -1,53 +1,42 @@
-require "formula"
-
 class Wfproxynext < Formula
   homepage "https://www.wavefront.com"
   url "https://wavefront-cdn.s3.us-west-2.amazonaws.com/brew/wavefront-proxy-12.0.0.zip"
   sha256 "ff60d90b1936a53705f50448ace73740c91611e1d4ebe37d8871ec9779318d91"
 
   depends_on "telegraf" => :optional
+  depends_on "java11" => :recommended
 
   def install
-	lib.install "lib/proxy-uber.jar"
-	lib.install "lib/jdk"
-  	bin.install "bin/wfproxy"
     (etc/"wavefront/wavefront-proxy").mkpath
     (var/"spool/wavefront-proxy").mkpath
-    (var/"log/wavefront").mkpath
-    etc.install "etc/wfproxy.conf" => "wavefront/wavefront-proxy/wavefront.conf"
-    etc.install "etc/log4j2.xml" => "wavefront/wavefront-proxy/log4j2.xml"
+    (var/"log/wavefront-proxy").mkpath
+
+    lib.install "wavefront-proxy.jar"
+    bin.install "wfproxy" => "wfproxynext"
+    etc.install "wavefront.conf" => "wavefront/wavefront-proxy/wavefront.conf"
+    etc.install "log4j2.xml" => "wavefront/wavefront-proxy/log4j2.xml"
+
+    server = ENV["HOMEBREW_WF_URL"]
+    key = ENV["HOMEBREW_WF_TK"]
+
+    if server
+      print "Using server: '"+server+"'\n"
+      inreplace etc/"wavefront/wavefront-proxy/wavefront.conf", /server=.*/, "server="+server
+    end
+
+    if key
+      print "Using token: '"+key+"'\n"
+      inreplace etc/"wavefront/wavefront-proxy/wavefront.conf", /token=.*/, "token="+key
+    end
+
   end
 
-  plist_options :manual => "wfproxy -f #{HOMEBREW_PREFIX}/etc/wavefront/wavefront-proxy/wavefront.conf"
+  plist_options :manual => "wfproxynext"
 
-  def plist; <<-EOS
-    <?xml version="1.0" encoding="UTF-8"?>
-    <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-    <plist version="1.0">
-      <dict>
-        <key>KeepAlive</key>
-        <dict>
-          <key>SuccessfulExit</key>
-          <false/>
-        </dict>
-        <key>Label</key>
-        <string>#{plist_name}</string>
-        <key>ProgramArguments</key>
-        <array>
-          <string>#{opt_bin}/wfproxy</string>
-          <string>-f</string>
-          <string>#{etc}/wavefront/wavefront-proxy/wavefront.conf</string>
-        </array>
-        <key>RunAtLoad</key>
-        <true/>
-        <key>WorkingDirectory</key>
-        <string>#{var}/spool/wavefront-proxy</string>
-        <key>StandardErrorPath</key>
-        <string>#{var}/log/wavefront/wavefront.log</string>
-        <key>StandardOutPath</key>
-        <string>#{var}/log/wavefront/wavefront.log</string>
-      </dict>
-    </plist>
-    EOS
+  service do
+    log_path var/"log/wavefront-proxy/stdout.log"
+    error_log_path var/"log/wavefront-proxy/stderr.log"
+    keep_alive true
+    run bin/"wfproxynext"
   end
 end
