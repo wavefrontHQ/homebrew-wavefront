@@ -1,7 +1,7 @@
 class Wfproxy < Formula
   homepage "https://www.wavefront.com"
-  url "https://macos-testing-glaullon.s3.us-west-2.amazonaws.com/wfproxy_macos_11.4.zip"
-  sha256 "035447a04ca46ac85c49989d4597cc189584845b9d2da1d0bf379069a368262c"
+  url "https://wavefront-cdn.s3.us-west-2.amazonaws.com/brew/wavefront-proxy-12.0.0.zip"
+  sha256 "98df3188e07fcfb888b215f7787f48ea8885c19dc1b7eff186efac5a2875d090"
 
   depends_on "telegraf" => :optional
   depends_on "java11" => :recommended
