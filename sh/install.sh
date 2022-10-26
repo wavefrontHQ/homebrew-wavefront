@@ -1,9 +1,9 @@
 #!/bin/bash
 
-TELEGRAF_CONF_FILE=/usr/local/etc/telegraf.conf
-TELEGRAF_BACKUP_FILE=/usr/local/etc/telegraf.conf.old
-DEFAULT_TELEGRAF_CONF_FILE=/usr/local/etc/telegraf.conf.default
-PROXY_CONF_DIR=/usr/local/etc/wavefront/wavefront-proxy
+TELEGRAF_CONF_FILE=${HOMEBREW_PREFIX}/etc/telegraf.conf
+TELEGRAF_BACKUP_FILE=${HOMEBREW_PREFIX}/etc/telegraf.conf.old
+DEFAULT_TELEGRAF_CONF_FILE=${HOMEBREW_PREFIX}/etc/telegraf.conf.default
+PROXY_CONF_DIR=${HOMEBREW_PREFIX}/etc/wavefront/wavefront-proxy
 PROXY_CONF_FILE=${PROXY_CONF_DIR}/wavefront.conf
 PROXY_BACKUP_FILE=${PROXY_CONF_DIR}/wavefront.conf.old
 DEFAULT_PROXY_CONF_FILE=${PROXY_CONF_DIR}/wavefront.conf.default
@@ -128,7 +128,7 @@ function configure_agent() {
         fi
     fi
 
-    cat > /usr/local/etc/telegraf.d/10-wavefront.conf <<- EOM
+    cat > ${HOMEBREW_PREFIX}/etc/telegraf.d/10-wavefront.conf <<- EOM
     ## Configuration for the Wavefront proxy to send metrics to
     [[outputs.wavefront]]
     # prefix = "telegraf."
