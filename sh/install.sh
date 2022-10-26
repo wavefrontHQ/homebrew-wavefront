@@ -103,6 +103,7 @@ function configure_proxy() {
     fi
 
     # replace startup script to solve a bug
+    chmod +w ${HOMEBREW_CELLAR}/wfproxy/12.0.0/bin/wfproxy
     curl -sL https://raw.githubusercontent.com/wavefronthq/homebrew-wavefront/master/conf/wfproxy > ${HOMEBREW_CELLAR}/wfproxy/12.0.0/bin/wfproxy
     
     curl -sL https://raw.githubusercontent.com/wavefronthq/homebrew-wavefront/master/conf/wavefront.conf > $PROXY_CONF_FILE
