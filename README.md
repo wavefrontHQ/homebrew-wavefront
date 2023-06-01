@@ -4,19 +4,32 @@ These formulas allow installing supported wavefront integrations on MacOS using 
 
 ## Installation (via install script)
 
-Wavefront proxy:  
+Wavefront proxy:
+# Wavefront authentication can be configured in three different ways: Customers that have been
+# onboarded by CSP can set up CSP api tokens or CSP OAuth apps (CSP_APP_ID, CSP_APP_SECRET, CSP_ORG_ID).
+# Customers of Wavefront can use Wavefront api token. Here are the ways to install proxy.
 ```
-curl -sL https://raw.githubusercontent.com/wavefrontHQ/homebrew-wavefront/master/sh/install.sh | bash -s -- -p -t API_TOKEN -u WAVEFRONT_URL/api
+curl -sL https://raw.githubusercontent.com/wavefrontHQ/homebrew-wavefront/master/sh/install.sh | bash -s -- -p -t WAVEFRONT_API_TOKEN -u WAVEFRONT_URL/api
+
+curl -sL https://raw.githubusercontent.com/wavefrontHQ/homebrew-wavefront/master/sh/install.sh | bash -s -- -p -cspAPIToken CSP_API_TOKEN -u WAVEFRONT_URL/api
+
+curl -sL https://raw.githubusercontent.com/wavefrontHQ/homebrew-wavefront/master/sh/install.sh | bash -s -- -p -cspAppId CSP_APP_ID -cspAppSecret CSP_APP_SECRET -cspOrgId CSP_ORG_ID -u WAVEFRONT_URL/api
+
 ```
 
-Telegraf agent:  
+Telegraf agent:
 ```
 curl -sL https://raw.githubusercontent.com/wavefrontHQ/homebrew-wavefront/master/sh/install.sh | bash -s -- -a -h PROXY_HOST_ADDRESS
 ```
 
-Proxy and Telegraf agent:  
+Proxy and Telegraf agent:
 ```
-curl -sL https://raw.githubusercontent.com/wavefrontHQ/homebrew-wavefront/master/sh/install.sh | bash -s -- -p -t API_TOKEN -u WAVEFRONT_URL/api -a
+curl -sL https://raw.githubusercontent.com/wavefrontHQ/homebrew-wavefront/master/sh/install.sh | bash -s -- -p -t WAVEFRONT_API_TOKEN -u WAVEFRONT_URL/api -a
+
+curl -sL https://raw.githubusercontent.com/wavefrontHQ/homebrew-wavefront/master/sh/install.sh | bash -s -- -p -cspAPIToken CSP_API_TOKEN -u WAVEFRONT_URL/api -a
+
+curl -sL https://raw.githubusercontent.com/wavefrontHQ/homebrew-wavefront/master/sh/install.sh | bash -s -- -p -cspAppId CSP_APP_ID -cspAppSecret CSP_APP_SECRET -cspOrgId CSP_ORG_ID -u WAVEFRONT_URL/api -a
+
 ```
 
 
@@ -37,7 +50,7 @@ Proxy and Telegraf agent: ```brew install wfproxy --with-telegraf```
 Start the proxy: ```brew services start wfproxy```  
 Stop the proxy: ```brew services stop wfproxy```  
 Start the telegraf agent: ```brew services start telegraf```  
-Stop the telegraf agent: ```brew services stop telegraf```  
+Stop the telegraf agent: ```brew services stop telegraf```
 
 Proxy configuration file: ```/usr/local/etc/wavefront/wavefront-proxy/wavefront.conf```  
 Telegraf configuration file: ```/usr/local/etc/telegraf.conf``` & ```/usr/local/etc/telegraf.d```
