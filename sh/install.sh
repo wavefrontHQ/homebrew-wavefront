@@ -123,7 +123,7 @@ function configure_proxy() {
     elif [[ -n "$CSP_API_TOKEN" ]]; then
         sed -i'.bak' "s/#cspAPIToken=CSP_API_TOKEN_HERE/cspAPIToken=${CSP_API_TOKEN}/" $PROXY_CONF_FILE
     elif [[ -n "$WAVEFRONT_API_TOKEN" ]]; then
-        sed -i'.bak' "s/WAVEFRONT_API_TOKEN_HERE/${WAVEFRONT_API_TOKEN}/" $PROXY_CONF_FILE
+        sed -i'.bak' "s/#token=WAVEFRONT_API_TOKEN_HERE/token=${WAVEFRONT_API_TOKEN}/" $PROXY_CONF_FILE
     fi
 
     # replace server url
