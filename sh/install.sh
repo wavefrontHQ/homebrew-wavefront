@@ -23,10 +23,18 @@ function print_usage_and_exit() {
     echo -e "\t-u string  The Wavefront URL. Typically http://WAVEFRONT_URL/api".
     echo -e "\t-f string  Optional user friendly hostname used in reporting the telegraf and proxy metrics. Defaults to os.Hostname()".
     echo -e "\t-n Install the Wavefront proxy-next. -p required with this option.".
+    echo -e "\t-cspAPIToken  string The CSP api token."
+    echo -e "\t-cspAppId     string The App id of the CSP server to server OAuth app."
+    echo -e "\t-cspAppSecret string The App secret of the CSP server to server OAuth app."
+    echo -e "\t-cspOrgId     string The organization id in the CSP."
     echo "Example usage:"
-    echo "$0 -p -t API_TOKEN -u WAVEFRONT_URL"
-    echo "$0 -a -h PROXY_HOST"
-    echo "$0 -p -t API_TOKEN -u WAVEFRONT_URL -a -h PROXY_HOST"
+    echo "$0 -p -t <WAVEFRONT_API_TOKEN> -u <WAVEFRONT_URL>"
+    echo "$0 -p -cspAPIToken <CSP_API_TOKEN> -u <WAVEFRONT_URL>"
+    echo "$0 -p -cspAppId <CSP_APP_ID> -cspAppSecret <CSP_APP_SECRET> -cspOrgId <CSP_ORG_ID> -u <WAVEFRONT_URL>"
+    echo "$0 -a -h <PROXY_HOST>"
+    echo "$0 -p -t <WAVEFRONT_API_TOKEN> -u <WAVEFRONT_URL> -a -h <PROXY_HOST>"
+    echo "$0 -p -cspAPIToken <CSP_API_TOKEN> -u <WAVEFRONT_URL> -a -h <PROXY_HOST>"
+    echo "$0 -p -cspAppId <CSP_APP_ID> -cspAppSecret <CSP_APP_SECRET> -cspOrgId <CSP_ORG_ID> -u <WAVEFRONT_URL> -a -h <PROXY_HOST>"
     exit 1
 }
 
@@ -90,9 +98,13 @@ function delete_proxy_files() {
 }
 
 function configure_proxy() {
-    TOKEN=$1
+    WAVEFRONT_API_TOKEN=$1
     URL=$2
     HOSTNAME=$3
+    CSP_API_TOKEN=$4
+    CSP_APP_ID=$5
+    CSP_APP_SECRET=$6
+    CSP_ORG_ID=$7
 
     # cleanup previous proxy install
     delete_proxy_files
@@ -102,10 +114,17 @@ function configure_proxy() {
         rm -f $DEFAULT_PROXY_CONF_FILE
     fi
 
-    curl -sL https://raw.githubusercontent.com/wavefronthq/homebrew-wavefront/master/conf/wavefront.conf > $PROXY_CONF_FILE
+    sudo curl -sL https://raw.githubusercontent.com/wavefronthq/homebrew-wavefront/master/conf/wavefront.conf > $PROXY_CONF_FILE
 
-    # replace token
-    sed -i'.bak' "s/TOKEN_HERE/${TOKEN}/" $PROXY_CONF_FILE
+    if [[ -n "$CSP_APP_ID" && -n "$CSP_APP_SECRET" && -n "$CSP_ORG_ID" ]]; then
+        sed -i'.bak' "s/#cspAppId=CSP_APP_ID_HERE/cspAppId=${CSP_APP_ID}/" $PROXY_CONF_FILE
+        sed -i'.bak' "s/#cspAppSecret=CSP_APP_SECRET_HERE/cspAppSecret=${CSP_APP_SECRET}/" $PROXY_CONF_FILE
+        sed -i'.bak' "s/#cspOrgId=CSP_ORG_ID_HERE/cspOrgId=${CSP_ORG_ID}/" $PROXY_CONF_FILE
+    elif [[ -n "$CSP_API_TOKEN" ]]; then
+        sed -i'.bak' "s/#cspAPIToken=CSP_API_TOKEN_HERE/cspAPIToken=${CSP_API_TOKEN}/" $PROXY_CONF_FILE
+    elif [[ -n "$WAVEFRONT_API_TOKEN" ]]; then
+        sed -i'.bak' "s/WAVEFRONT_API_TOKEN_HERE/${WAVEFRONT_API_TOKEN}/" $PROXY_CONF_FILE
+    fi
 
     # replace server url
     sed -i'.bak' "s/WAVEFRONT_SERVER_URL/${URL//\//\\/}/" $PROXY_CONF_FILE
@@ -146,7 +165,7 @@ EOM
 function install_wf_telegraf_conf() {
     FRIENDLY_HOSTNAME=$1
     if [[ -f $TELEGRAF_CONF_FILE ]] ; then
-        mv $TELEGRAF_CONF_FILE $TELEGRAF_BACKUP_FILE 
+        mv $TELEGRAF_CONF_FILE $TELEGRAF_BACKUP_FILE
         rm -f $DEFAULT_TELEGRAF_CONF_FILE
     fi
     curl -sL https://raw.githubusercontent.com/wavefronthq/homebrew-wavefront/master/conf/telegraf.conf > $TELEGRAF_CONF_FILE
@@ -174,40 +193,57 @@ function check_status() {
 
 check_operating_system
 
-TOKEN=
+WAVEFRONT_API_TOKEN=
 URL=
 PROXY_HOST=
 INSTALL_PROXY=
 INSTALL_PROXY_NEXT=
 INSTALL_AGENT=
 FRIENDLY_HOSTNAME=
-while getopts "t:u:h:f:pan" opt; do
-  case $opt in
-    t)
-      TOKEN="$OPTARG"
+CSP_API_TOKEN=
+CSP_APP_ID=
+CSP_APP_SECRET=
+CSP_ORG_ID=
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    -t)
+      WAVEFRONT_API_TOKEN="$2"
       ;;
-    u)
-      URL="$OPTARG"
+    -u)
+      URL="$2"
       ;;
-    h)
-      PROXY_HOST="$OPTARG"
+    -h)
+      PROXY_HOST="$2"
       ;;
-    f)
-      FRIENDLY_HOSTNAME="$OPTARG"
+    -f)
+      FRIENDLY_HOSTNAME="$2"
       ;;
-    p)
+    -p)
       INSTALL_PROXY=y
       ;;
-    a)
+    -a)
       INSTALL_AGENT=y
       ;;
-    n)
+    -n)
       INSTALL_PROXY_NEXT=y
       ;;
+    -cspAppId)
+      CSP_APP_ID="$2"
+      ;;
+    -cspAppSecret)
+      CSP_APP_SECRET="$2"
+      ;;
+    -cspOrgId)
+      CSP_ORG_ID="$2"
+      ;;
+    -cspAPIToken)
+      CSP_API_TOKEN="$2"
+      ;;
     \?)
-      print_usage_and_exit "Invalid option: -$OPTARG" >&2
+      print_usage_and_exit "Invalid option: -$1" >&2
       ;;
   esac
+shift
 done
 
 if [[ -z "$INSTALL_PROXY" && -z "$INSTALL_AGENT" ]]; then
@@ -215,8 +251,18 @@ if [[ -z "$INSTALL_PROXY" && -z "$INSTALL_AGENT" ]]; then
 fi
 
 if [ -n "$INSTALL_PROXY" ]; then
-    if [[ -z "$URL" || -z "$TOKEN" ]]; then
-        print_usage_and_exit "Wavefront URL and API Token required."
+    authType="false"
+    if [[ -n "$CSP_APP_ID" && -n "$CSP_APP_SECRET" && -n "$CSP_ORG_ID" && -n "$URL" ]]; then
+        authType="true"
+    elif [[ -n "$URL" && -n "$CSP_API_TOKEN" ]]; then
+        authType="true"
+    elif [[ -n "$WAVEFRONT_API_TOKEN" && -n "$URL" ]]; then
+        authType="true"
+    fi
+    if [[ "$authType" == "false" ]]; then
+        echo "Error: Invalid combination of parameters."
+        print_usage_and_exit
+        exit 1
     fi
 fi
 
@@ -258,7 +304,7 @@ if [ -n "$INSTALL_PROXY" ]; then
         service_name=$PROXY_NEXT_SERVICE_NAME
     fi
     install_service $service_name "Wavefront proxy installation failed."
-    configure_proxy $TOKEN $URL $FRIENDLY_HOSTNAME
+    configure_proxy "$WAVEFRONT_API_TOKEN" "$URL" "$FRIENDLY_HOSTNAME" "$CSP_API_TOKEN" "$CSP_APP_ID" "$CSP_APP_SECRET" "$CSP_ORG_ID"
     brew services start $service_name
     check_status $? "Error starting $service_name."
 fi
