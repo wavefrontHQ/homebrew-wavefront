@@ -114,15 +114,17 @@ function configure_proxy() {
         rm -f $DEFAULT_PROXY_CONF_FILE
     fi
 
-    sudo curl -sL https://raw.githubusercontent.com/wavefronthq/homebrew-wavefront/master/conf/wavefront.conf > $PROXY_CONF_FILE
+    curl -sL https://raw.githubusercontent.com/wavefronthq/homebrew-wavefront/master/conf/wavefront.conf > $PROXY_CONF_FILE
 
     if [[ -n "$CSP_APP_ID" && -n "$CSP_APP_SECRET" && -n "$CSP_ORG_ID" ]]; then
         sed -i'.bak' "s/#cspAppId=CSP_APP_ID_HERE/cspAppId=${CSP_APP_ID}/" $PROXY_CONF_FILE
         sed -i'.bak' "s/#cspAppSecret=CSP_APP_SECRET_HERE/cspAppSecret=${CSP_APP_SECRET}/" $PROXY_CONF_FILE
         sed -i'.bak' "s/#cspOrgId=CSP_ORG_ID_HERE/cspOrgId=${CSP_ORG_ID}/" $PROXY_CONF_FILE
-    elif [[ -n "$CSP_API_TOKEN" ]]; then
+    fi
+    if [[ -n "$CSP_API_TOKEN" ]]; then
         sed -i'.bak' "s/#cspAPIToken=CSP_API_TOKEN_HERE/cspAPIToken=${CSP_API_TOKEN}/" $PROXY_CONF_FILE
-    elif [[ -n "$WAVEFRONT_API_TOKEN" ]]; then
+    fi
+    if [[ -n "$WAVEFRONT_API_TOKEN" ]]; then
         sed -i'.bak' "s/#token=WAVEFRONT_API_TOKEN_HERE/token=${WAVEFRONT_API_TOKEN}/" $PROXY_CONF_FILE
     fi
 
