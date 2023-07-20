@@ -1,5 +1,7 @@
 #!/bin/bash
 
+IFS=": " read -r _ HOMEBREW_PREFIX <<< "$(brew --config | grep HOMEBREW_PREFIX)"
+
 TELEGRAF_CONF_FILE=${HOMEBREW_PREFIX}/etc/telegraf.conf
 TELEGRAF_BACKUP_FILE=${HOMEBREW_PREFIX}/etc/telegraf.conf.old
 DEFAULT_TELEGRAF_CONF_FILE=${HOMEBREW_PREFIX}/etc/telegraf.conf.default

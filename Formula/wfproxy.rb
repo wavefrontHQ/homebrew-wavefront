@@ -31,9 +31,8 @@ class Wfproxy < Formula
 
   end
 
-  plist_options :manual => "wfproxy"
-
   service do
+    require_root true
     log_path var/"log/wavefront-proxy/stdout.log"
     error_log_path var/"log/wavefront-proxy/stderr.log"
     keep_alive true
