@@ -59,16 +59,16 @@ function install_homebrew() {
 function install_service() {
     SERVICE=$1
     FAIL_MSG=$2
-    stop_if_installed $SERVICE
-    brew install $SERVICE
-    check_status $? $FAIL_MSG
+    stop_if_installed "$SERVICE"
+    brew install "$SERVICE"
+    check_status $? "$FAIL_MSG"
 }
 
 function stop_if_installed() {
     SERVICE=$1
     brew list | grep -q "${SERVICE}$"
     if [[ $? -eq 0 ]]; then
-        brew services stop ${SERVICE}
+        brew services stop "${SERVICE}"
     fi
 }
 
@@ -76,8 +76,8 @@ function uninstall_if_installed() {
     SERVICE=$1
     brew list | grep -q "${SERVICE}$"
     if [[ $? -eq 0 ]]; then
-        brew services stop ${SERVICE}
-        brew uninstall ${SERVICE}
+        brew services stop "${SERVICE}"
+        brew uninstall "${SERVICE}"
         return 0
     fi
     return 1
@@ -94,7 +94,7 @@ function remove_old_telegraf() {
 }
 
 function delete_proxy_files() {
-    rm -f ${PROXY_CONF_DIR}/.wavefront_id
+    rm -f "${PROXY_CONF_DIR}"/.wavefront_id
 }
 
 function configure_proxy() {
@@ -110,31 +110,31 @@ function configure_proxy() {
     delete_proxy_files
 
     if [[ -f $DEFAULT_PROXY_CONF_FILE ]] ; then
-        mv $PROXY_CONF_FILE $PROXY_BACKUP_FILE
-        rm -f $DEFAULT_PROXY_CONF_FILE
+        mv "$PROXY_CONF_FILE" "$PROXY_BACKUP_FILE"
+        rm -f "$DEFAULT_PROXY_CONF_FILE"
     fi
 
-    curl -sL https://raw.githubusercontent.com/wavefronthq/homebrew-wavefront/master/conf/wavefront.conf > $PROXY_CONF_FILE
+    curl -sL https://raw.githubusercontent.com/wavefronthq/homebrew-wavefront/master/conf/wavefront.conf > "$PROXY_CONF_FILE"
 
     if [[ -n "$CSP_APP_ID" && -n "$CSP_APP_SECRET" && -n "$CSP_ORG_ID" ]]; then
-        sed -i'.bak' "s/#cspAppId=CSP_APP_ID_HERE/cspAppId=${CSP_APP_ID}/" $PROXY_CONF_FILE
-        sed -i'.bak' "s/#cspAppSecret=CSP_APP_SECRET_HERE/cspAppSecret=${CSP_APP_SECRET}/" $PROXY_CONF_FILE
-        sed -i'.bak' "s/#cspOrgId=CSP_ORG_ID_HERE/cspOrgId=${CSP_ORG_ID}/" $PROXY_CONF_FILE
+        sed -i'.bak' "s/#cspAppId=CSP_APP_ID_HERE/cspAppId=${CSP_APP_ID}/" "$PROXY_CONF_FILE"
+        sed -i'.bak' "s/#cspAppSecret=CSP_APP_SECRET_HERE/cspAppSecret=${CSP_APP_SECRET}/" "$PROXY_CONF_FILE"
+        sed -i'.bak' "s/#cspOrgId=CSP_ORG_ID_HERE/cspOrgId=${CSP_ORG_ID}/" "$PROXY_CONF_FILE"
     fi
     if [[ -n "$CSP_API_TOKEN" ]]; then
-        sed -i'.bak' "s/#cspAPIToken=CSP_API_TOKEN_HERE/cspAPIToken=${CSP_API_TOKEN}/" $PROXY_CONF_FILE
+        sed -i'.bak' "s/#cspAPIToken=CSP_API_TOKEN_HERE/cspAPIToken=${CSP_API_TOKEN}/" "$PROXY_CONF_FILE"
     fi
     if [[ -n "$WAVEFRONT_API_TOKEN" ]]; then
-        sed -i'.bak' "s/#token=WAVEFRONT_API_TOKEN_HERE/token=${WAVEFRONT_API_TOKEN}/" $PROXY_CONF_FILE
+        sed -i'.bak' "s/#token=WAVEFRONT_API_TOKEN_HERE/token=${WAVEFRONT_API_TOKEN}/" "$PROXY_CONF_FILE"
     fi
 
     # replace server url
-    sed -i'.bak' "s/WAVEFRONT_SERVER_URL/${URL//\//\\/}/" $PROXY_CONF_FILE
+    sed -i'.bak' "s/WAVEFRONT_SERVER_URL/${URL//\//\\/}/" "$PROXY_CONF_FILE"
 
     if [[ -n ${HOSTNAME} ]] ; then
-        sed -i'.bak' "s/myHost/${HOSTNAME}/" $PROXY_CONF_FILE
+        sed -i'.bak' "s/myHost/${HOSTNAME}/" "$PROXY_CONF_FILE"
     fi
-    rm -f ${PROXY_CONF_FILE}.bak
+    rm -f "${PROXY_CONF_FILE}".bak
 }
 
 function configure_agent() {
@@ -143,13 +143,13 @@ function configure_agent() {
 
     # set PROXY_HOST to localhost if it equals the hostname in proxy conf
     if [[ -f $PROXY_CONF_FILE ]] ; then
-        grep -q "hostname=${PROXY_HOST}$" $PROXY_CONF_FILE
+        grep -q "hostname=${PROXY_HOST}$" "$PROXY_CONF_FILE"
         if [[ $? -eq 0 ]]; then
             PROXY_HOST=localhost
         fi
     fi
 
-    cat > ${HOMEBREW_PREFIX}/etc/telegraf.d/10-wavefront.conf <<- EOM
+    cat > "${HOMEBREW_PREFIX}"/etc/telegraf.d/10-wavefront.conf <<- EOM
     ## Configuration for the Wavefront proxy to send metrics to
     [[outputs.wavefront]]
     # prefix = "telegraf."
@@ -161,18 +161,20 @@ function configure_agent() {
       use_regex = false
 EOM
 
-    install_wf_telegraf_conf $FRIENDLY_HOSTNAME
+    install_wf_telegraf_conf "$FRIENDLY_HOSTNAME"
 }
 
 function install_wf_telegraf_conf() {
     FRIENDLY_HOSTNAME=$1
     if [[ -f $TELEGRAF_CONF_FILE ]] ; then
-        mv $TELEGRAF_CONF_FILE $TELEGRAF_BACKUP_FILE
+        mv "$TELEGRAF_CONF_FILE" "$TELEGRAF_BACKUP_FILE"
+        # shellcheck disable=SC2086
         rm -f $DEFAULT_TELEGRAF_CONF_FILE
     fi
+    # shellcheck disable=SC2086
     curl -sL https://raw.githubusercontent.com/wavefronthq/homebrew-wavefront/master/conf/telegraf.conf > $TELEGRAF_CONF_FILE
-    sed -i'.bak' "s/hostname = \"\"/hostname = \"$FRIENDLY_HOSTNAME\"/" $TELEGRAF_CONF_FILE
-    rm -f ${TELEGRAF_CONF_FILE}.bak
+    sed -i'.bak' "s/hostname = \"\"/hostname = \"$FRIENDLY_HOSTNAME\"/" "$TELEGRAF_CONF_FILE"
+    rm -f "${TELEGRAF_CONF_FILE}".bak
 }
 
 function prompt_hostname() {
@@ -185,8 +187,8 @@ function prompt_hostname() {
 function check_status() {
     STATUS=$1
     MSG=$2
-    if [ $STATUS -ne 0 ]; then
-        echo $MSG
+    if [ "$STATUS" -ne 0 ]; then
+        echo "$MSG"
         exit 1
     fi
 }
@@ -288,7 +290,7 @@ check_homebrew_installed
 check_status $? "Homebrew required. Aborting installation."
 
 if [[ -z ${FRIENDLY_HOSTNAME} ]] ; then
-    FRIENDLY_HOSTNAME=`hostname`
+    FRIENDLY_HOSTNAME=$(hostname)
 fi
 echo "Using hostname: ${FRIENDLY_HOSTNAME}"
 
@@ -314,7 +316,7 @@ fi
 if [ -n "$INSTALL_AGENT" ]; then
     remove_old_telegraf
     install_service $TELEGRAF_SERVICE_NAME "Telegraf agent installation failed."
-    configure_agent $PROXY_HOST $FRIENDLY_HOSTNAME
+    configure_agent $PROXY_HOST "$FRIENDLY_HOSTNAME"
     brew services start $TELEGRAF_SERVICE_NAME
     check_status $? "Error starting $TELEGRAF_SERVICE_NAME."
 fi
