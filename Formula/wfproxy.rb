@@ -1,7 +1,7 @@
 class Wfproxy < Formula
   homepage "https://www.wavefront.com"
-  url "https://wavefront-cdn.s3.us-west-2.amazonaws.com/brew/wavefront-proxy-13.1.0.zip"
-  sha256 "20ba115c338a9db7e1768acfe39b3be5db903456e8ea33e951c5b675f40ad067"
+  url "https://wavefront-cdn.s3.us-west-2.amazonaws.com/brew/wavefront-proxy-13.2.0.zip"
+  sha256 "93b3ab457ecf98528232d73d302f590b242643a8ac5fd90eab1f1ee604abcc9e"
 
   depends_on "telegraf" => :optional
   depends_on "java11" => :recommended
