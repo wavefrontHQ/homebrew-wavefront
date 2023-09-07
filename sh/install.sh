@@ -1,5 +1,6 @@
 #!/bin/bash
 
+HOMEBREW_PREFIX="${HOMEBREW_PREFIX:=$(brew --prefix)}"
 TELEGRAF_CONF_FILE=${HOMEBREW_PREFIX}/etc/telegraf.conf
 TELEGRAF_BACKUP_FILE=${HOMEBREW_PREFIX}/etc/telegraf.conf.old
 DEFAULT_TELEGRAF_CONF_FILE=${HOMEBREW_PREFIX}/etc/telegraf.conf.default
@@ -59,16 +60,20 @@ function install_homebrew() {
 function install_service() {
     SERVICE=$1
     FAIL_MSG=$2
-    stop_if_installed $SERVICE
-    brew install $SERVICE
-    check_status $? $FAIL_MSG
+    stop_if_installed "$SERVICE"
+    ## brew currently tries to read from STDIN while installing wfproxy
+    ## By adding this 'echo ""', we give brew a stdin value to read.
+    ## If we don't do this, brew will read the rest of the script file instead,
+    ## which prevents all future steps in the script from running
+    echo "" | brew install "$SERVICE"
+    check_status $? "$FAIL_MSG"
 }
 
 function stop_if_installed() {
     SERVICE=$1
     brew list | grep -q "${SERVICE}$"
     if [[ $? -eq 0 ]]; then
-        brew services stop ${SERVICE}
+        brew services stop "${SERVICE}"
     fi
 }
 
@@ -76,8 +81,8 @@ function uninstall_if_installed() {
     SERVICE=$1
     brew list | grep -q "${SERVICE}$"
     if [[ $? -eq 0 ]]; then
-        brew services stop ${SERVICE}
-        brew uninstall ${SERVICE}
+        brew services stop "${SERVICE}"
+        brew uninstall "${SERVICE}"
         return 0
     fi
     return 1
@@ -185,13 +190,11 @@ function prompt_hostname() {
 function check_status() {
     STATUS=$1
     MSG=$2
-    if [ $STATUS -ne 0 ]; then
-        echo $MSG
+    if [ "$STATUS" -ne 0 ]; then
+        echo "$MSG"
         exit 1
     fi
 }
-
-# main()
 
 check_operating_system
 
