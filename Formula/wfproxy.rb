@@ -1,6 +1,6 @@
 class Wfproxy < Formula
   homepage "https://www.wavefront.com"
-  url "https://storage.googleapis.com/wf-build/brew/wavefront-proxy-14.0.0.zip"
+  url "https://51811f5f5eecd3a2.tobs.sptobsg1.vmw.saas.broadcom.com/wf-proxy/wfproxy_macos_proxy-14.0_20260209.zip"
   sha256 "ceb63601861337fe7970889342389aa535659283999bb15c64f2a172e53b82dd"
 
   depends_on "telegraf" => :optional
