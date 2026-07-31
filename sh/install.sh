@@ -158,8 +158,7 @@ function configure_agent() {
     ## Configuration for the Wavefront proxy to send metrics to
     [[outputs.wavefront]]
     # prefix = "telegraf."
-      host = "$PROXY_HOST"
-      port = 2878
+      url = "$PROXY_HOST:2878"
       metric_separator = "."
       source_override = ["hostname", "agent_host", "node_host"]
       convert_paths = true
