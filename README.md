@@ -15,31 +15,31 @@ Wavefront authentication can be configured in three different ways.
 
 #### CSP API Token
 ```
-curl -sL https://raw.githubusercontent.com/wavefrontHQ/homebrew-wavefront/master/sh/install.sh | bash -s -- -p -cspAPIToken CSP_API_TOKEN -u WAVEFRONT_URL/api
+curl -sL https://raw.githubusercontent.com/Broadcom/wavefront-homebrew/master/sh/install.sh | bash -s -- -p -cspAPIToken CSP_API_TOKEN -u WAVEFRONT_URL/api
 ```
 
 #### CSP OAuth App
 ```
-curl -sL https://raw.githubusercontent.com/wavefrontHQ/homebrew-wavefront/master/sh/install.sh | bash -s -- -p -cspAppId CSP_APP_ID -cspAppSecret CSP_APP_SECRET -cspOrgId CSP_ORG_ID -u WAVEFRONT_URL/api
+curl -sL https://raw.githubusercontent.com/Broadcom/wavefront-homebrew/master/sh/install.sh | bash -s -- -p -cspAppId CSP_APP_ID -cspAppSecret CSP_APP_SECRET -cspOrgId CSP_ORG_ID -u WAVEFRONT_URL/api
 ```
 
 ##### Wavefront API Token
 ```
-curl -sL https://raw.githubusercontent.com/wavefrontHQ/homebrew-wavefront/master/sh/install.sh | bash -s -- -p -t WAVEFRONT_API_TOKEN -u WAVEFRONT_URL/api
+curl -sL https://raw.githubusercontent.com/Broadcom/wavefront-homebrew/master/sh/install.sh | bash -s -- -p -t WAVEFRONT_API_TOKEN -u WAVEFRONT_URL/api
 ```
 
 ### Telegraf agent only
 ```
-curl -sL https://raw.githubusercontent.com/wavefrontHQ/homebrew-wavefront/master/sh/install.sh | bash -s -- -a -h PROXY_HOST_ADDRESS
+curl -sL https://raw.githubusercontent.com/Broadcom/wavefront-homebrew/master/sh/install.sh | bash -s -- -a -h PROXY_HOST_ADDRESS
 ```
 
 ### Wavefront proxy and Telegraf agent
 ```
-curl -sL https://raw.githubusercontent.com/wavefrontHQ/homebrew-wavefront/master/sh/install.sh | bash -s -- -p -t WAVEFRONT_API_TOKEN -u WAVEFRONT_URL/api -a
+curl -sL https://raw.githubusercontent.com/Broadcom/wavefront-homebrew/master/sh/install.sh | bash -s -- -p -t WAVEFRONT_API_TOKEN -u WAVEFRONT_URL/api -a
 
-curl -sL https://raw.githubusercontent.com/wavefrontHQ/homebrew-wavefront/master/sh/install.sh | bash -s -- -p -cspAPIToken CSP_API_TOKEN -u WAVEFRONT_URL/api -a
+curl -sL https://raw.githubusercontent.com/Broadcom/wavefront-homebrew/master/sh/install.sh | bash -s -- -p -cspAPIToken CSP_API_TOKEN -u WAVEFRONT_URL/api -a
 
-curl -sL https://raw.githubusercontent.com/wavefrontHQ/homebrew-wavefront/master/sh/install.sh | bash -s -- -p -cspAppId CSP_APP_ID -cspAppSecret CSP_APP_SECRET -cspOrgId CSP_ORG_ID -u WAVEFRONT_URL/api -a
+curl -sL https://raw.githubusercontent.com/Broadcom/wavefront-homebrew/master/sh/install.sh | bash -s -- -p -cspAppId CSP_APP_ID -cspAppSecret CSP_APP_SECRET -cspOrgId CSP_ORG_ID -u WAVEFRONT_URL/api -a
 
 ```
 
@@ -49,7 +49,7 @@ Note: This option requires manually configuring the proxy and the telegraf agent
 
 Install [Homebrew](https://brew.sh/) and then install the wavefront Tap:
 
-```brew tap wavefrontHQ/wavefront```
+```brew tap broadcom/wavefront https://github.com/Broadcom/wavefront-homebrew```
 
 Wavefront proxy: ```brew install wfproxy```  
 Telegraf agent: ```brew install telegraf```  
@@ -70,5 +70,5 @@ Telegraf log file: ```/usr/local/var/log/telegraf.log```
 
 ## Uninstall
 ```
-bash -c "$(curl -s https://raw.githubusercontent.com/wavefrontHQ/homebrew-wavefront/master/sh/uninstall.sh)"
+bash -c "$(curl -s https://raw.githubusercontent.com/Broadcom/wavefront-homebrew/master/sh/uninstall.sh)"
 ```

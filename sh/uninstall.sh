@@ -89,7 +89,7 @@ delete_proxy_files
 uninstall_cmd wftelegraf
 uninstall_cmd telegraf
 delete_telegraf_files
-brew untap wavefronthq/wavefront
+brew untap broadcom/wavefront
 
 uninstall_cask_java
 uninstall_homebrew

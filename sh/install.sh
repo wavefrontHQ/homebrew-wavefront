@@ -119,7 +119,7 @@ function configure_proxy() {
         rm -f $DEFAULT_PROXY_CONF_FILE
     fi
 
-    curl -sL https://raw.githubusercontent.com/wavefronthq/homebrew-wavefront/master/conf/wavefront.conf > $PROXY_CONF_FILE
+    curl -sL https://raw.githubusercontent.com/Broadcom/wavefront-homebrew/master/conf/wavefront.conf > $PROXY_CONF_FILE
 
     if [[ -n "$CSP_APP_ID" && -n "$CSP_APP_SECRET" && -n "$CSP_ORG_ID" ]]; then
         sed -i'.bak' "s/#cspAppId=CSP_APP_ID_HERE/cspAppId=${CSP_APP_ID}/" $PROXY_CONF_FILE
@@ -174,7 +174,7 @@ function install_wf_telegraf_conf() {
         mv $TELEGRAF_CONF_FILE $TELEGRAF_BACKUP_FILE
         rm -f $DEFAULT_TELEGRAF_CONF_FILE
     fi
-    curl -sL https://raw.githubusercontent.com/wavefronthq/homebrew-wavefront/master/conf/telegraf.conf > $TELEGRAF_CONF_FILE
+    curl -sL https://raw.githubusercontent.com/Broadcom/wavefront-homebrew/master/conf/telegraf.conf > $TELEGRAF_CONF_FILE
     sed -i'.bak' "s/hostname = \"\"/hostname = \"$FRIENDLY_HOSTNAME\"/" $TELEGRAF_CONF_FILE
     rm -f ${TELEGRAF_CONF_FILE}.bak
 }
@@ -298,7 +298,9 @@ echo "Using hostname: ${FRIENDLY_HOSTNAME}"
 brew update
 
 # install the wavefront Tap
-brew tap wavefrontHQ/wavefront
+# Note: the tap repo was transferred+renamed (wavefrontHQ/homebrew-wavefront -> Broadcom/wavefront-homebrew),
+# which breaks brew's default "homebrew-<repo>" naming convention, so the URL must be explicit.
+brew tap broadcom/wavefront https://github.com/Broadcom/wavefront-homebrew
 check_status $? "Error installing the wavefront tap."
 
 # install proxy and/or agent
